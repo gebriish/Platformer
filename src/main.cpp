@@ -12,13 +12,14 @@ int main() {
 
   window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Platformer", NULL, NULL);
   log_info("window created! [%.1f, %.1f]", SCREEN_WIDTH, SCREEN_HEIGHT);
-  
+ 
+  // Window Creation Error Handling
   if (!window)
   {
     glfwTerminate();
     return -1;
   }
-
+  
   glfwMakeContextCurrent(window);
 
   while(!glfwWindowShouldClose(window)) {
