@@ -1,36 +1,47 @@
-#include <GLFW/glfw3.h>
-#include "engine/log.hpp"
+#include "engine/core.hpp"
+#include "engine/window.hpp"
+#include "engine/action_map.hpp"
+#include "engine/input.hpp"
 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
+static Window* window = nullptr;
 
 int main() {
-  GLFWwindow* window;
+  core_init();
 
-  if(!glfwInit())
-    return -1;
+  window = window_initialize(
+    800, 
+    500, 
+    "Platformer", 
+    WINDOWFLAG_CENTERED | WINDOWFLAG_RESIZABLE | WINDOWFLAG_VSYNC
+  );
 
-  window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Platformer", NULL, NULL);
-  log_info("window created! [%.1f, %.1f]", SCREEN_WIDTH, SCREEN_HEIGHT);
- 
-  // Window Creation Error Handling
-  if (!window)
-  {
-    glfwTerminate();
+  if(!window) {
+    core_destroy();
     return -1;
   }
-  
-  glfwMakeContextCurrent(window);
 
-  while(!glfwWindowShouldClose(window)) {
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+  bool running = true;
 
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+  action_bind_key("HOR", KEY_W, 1.0f);
+  action_bind_key("HOR", KEY_S, -1.0f);
+
+  action_bind_key("VERT", KEY_D, 1.0f);
+  action_bind_key("VERT", KEY_A, -1.0f);
+
+  while(running) {
+    Event e;
+    while(window_get_event(e)) {
+      if(e.type == EVENT_QUIT) {
+        running = false;
+        break;
+      }
+    }
+
+
+    action_map_update(window);
+    window_swap_buffers(window);
+    window_poll_events(window);
   }
 
-  glfwTerminate();
-  log_warn("app exit()");
-  return 0;
+  core_destroy();
 }
