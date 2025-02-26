@@ -1,4 +1,6 @@
 #pragma once
+#include <utility>
+#include "window.hpp"
 
 enum InputCode
 {
@@ -137,5 +139,22 @@ enum InputCode
   KEY_MENU              = 348,
 
   KEY_LAST 			  = KEY_MENU,
+
+  GAMEPAD_AXIS_LEFT_X    = 0,
+  GAMEPAD_AXIS_LEFT_Y    = 1,
+
+  GAMEPAD_AXIS_RIGHT_X   = 2,
+  GAMEPAD_AXIS_RIGHT_Y   = 3,
+
+  GAMEPAD_AXIS_LEFT_TRIGGER    = 4,
+  GAMEPAD_AXIS_RIGHT_TRIGGER   = 5,
 };
 
+void input_set_window(const Window* window);
+bool input_is_key_pressed(int key);
+bool input_is_mouse_pressed(int button);
+std::pair<float, float> input_get_cursor_position();
+
+bool input_gamepad_conntected(int gamepad);
+bool input_gamepad_button_pressed(int gamepad, int button);
+float input_gamepad_axis(int gamepad, int axis);

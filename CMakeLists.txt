@@ -24,6 +24,7 @@ endif ()
 
 set(GLFW_ROOT_DIR libs/glfw)
 set(GLAD_ROOT_DIR libs/glad)
+set(STB_ROOT_DIR libs/stb)
 
 add_subdirectory(${GLFW_ROOT_DIR})
 add_subdirectory(${GLAD_ROOT_DIR})
@@ -31,6 +32,7 @@ add_subdirectory(${GLAD_ROOT_DIR})
 target_include_directories(${PROJECT_NAME} 
 	PUBLIC ${GLFW_ROOT_DIR}/include
 	PUBLIC ${GLAD_ROOT_DIR}/include/glad
+	PUBLIC ${STB_ROOT_DIR}/include
 )
 
 target_link_directories(${PROJECT_NAME} 

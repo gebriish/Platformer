@@ -1,10 +1,10 @@
 #pragma once
 #include <string>
+#include <cstdint>
 #include "window.hpp"
 
 struct Action {
-  bool current_state = false;
-  bool prev_state = false;
+  uint8_t bitset = 0;
   float value = 0.0f;
 };
 
@@ -19,16 +19,18 @@ enum class ActionType {
 struct ActionBinding {
   ActionType type;
   int key;
+  int gamepad;
   float scale = 1.0f;
   float dead_zone = 0.1f;
 };
 
 void action_bind_key(const std::string& name, int key, float scale = 1.0f);
-void action_bind_mouse_button(const std::string& name, int button);
+void action_bind_mouse_button(const std::string& name, int button, float scale = 1.0f);
 void action_bind_mouse_axis(const std::string& name, bool x_axis, 
                             float dead_zone = 0.1f, float scale = 1.0f);
-void action_bind_gamepad_button(const std::string& name, int button);
-void action_bind_gamepad_axis(const std::string& name, bool x_axis, 
+void action_bind_gamepad_button(const std::string& name, int button, 
+                                int gamepad = 0, float scale = 1.0f);
+void action_bind_gamepad_axis(const std::string& name, int axis, int gamepad = 0,
                               float dead_zone = 0.1f, float scale = 1.0f);
 
 bool action_pressed(const std::string& name);

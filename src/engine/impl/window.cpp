@@ -19,10 +19,12 @@ static struct {
 Window* window_initialize(int width, int height, const char* title, uint32_t flags) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_RESIZABLE, flags & WINDOWFLAG_RESIZABLE   ? GLFW_TRUE : GLFW_FALSE);
   glfwWindowHint(GLFW_MAXIMIZED, flags & WINDOWFLAG_MAXIMIZED   ? GLFW_TRUE : GLFW_FALSE);
   glfwWindowHint(GLFW_DECORATED, flags & WINDOWFLAG_UNDECORATED ? GLFW_FALSE : GLFW_TRUE);
+  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, flags & WINDOWFLAG_TRANSPARENT ? GLFW_TRUE : GLFW_FALSE);
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
 
@@ -95,7 +97,7 @@ Window* window_initialize(int width, int height, const char* title, uint32_t fla
     resize_event.type = EVENT_RESIZE;
 
     resize_event.resize_data.width = width;
-    resize_event.resize_data.width = height;
+    resize_event.resize_data.height = height;
 
     g_EventManager.queue.push(resize_event);
   });
@@ -156,6 +158,10 @@ bool window_get_event(Event& e) {
   return true;
 }
 
-void* window_get_native_handle(Window* window) {
+void window_set_title(Window* window, const char* title) {
+	glfwSetWindowTitle(window->handle, title);
+}
+
+void* window_get_native_handle(const Window* window) {
   return (void*)window->handle;
 }

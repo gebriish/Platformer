@@ -20,6 +20,7 @@ enum WindowFlags {
   WINDOWFLAG_VSYNC        = 1 << 2,
   WINDOWFLAG_UNDECORATED  = 1 << 3,
   WINDOWFLAG_CENTERED     = 1 << 4,
+  WINDOWFLAG_TRANSPARENT  = 1 << 5,
 };
 
 struct Event {
@@ -42,5 +43,6 @@ void window_swap_buffers(const Window* window);
 void window_poll_events(Window* window);
 
 bool window_get_event(Event& e);
+void window_set_title(Window* window, const char* title);
 
-void* window_get_native_handle(Window* window); 
+void* window_get_native_handle(const Window* window); 

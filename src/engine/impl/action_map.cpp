@@ -6,11 +6,18 @@
 #include <vector>
 #include <cstdio>
 
+
+//======================================================================//
+//                      GLOBAL ACTION MAP STATE                         //
+//======================================================================//
 static struct {
   std::unordered_map<std::string, std::vector<ActionBinding>> bindings;
   std::unordered_map<std::string, Action> action_states;
 } g_ActionMap;
 
+//======================================================================//
+//                         POLLING FUNCTIONS                            //
+//======================================================================//
 static float get_input_value(GLFWwindow* window, const ActionBinding& bind) {
   switch(bind.type) {
     case ActionType::KEYBOARD :
@@ -24,14 +31,14 @@ static float get_input_value(GLFWwindow* window, const ActionBinding& bind) {
     }
     case ActionType::GAMEPAD_BUTTON : {
       GLFWgamepadstate state;
-      if(glfwGetGamepadState(GLFW_JOYSTICK_1, &state)) {
+      if(glfwGetGamepadState(GLFW_JOYSTICK_1 + bind.gamepad, &state)) {
         return state.buttons[bind.key] == GLFW_PRESS ? 1.0f : 0.0f;
       }
       return 0.0f;
     }
     case ActionType::GAMEPAD_AXIS : {
       GLFWgamepadstate state;
-      if(glfwGetGamepadState(GLFW_JOYSTICK_1, &state)) {
+      if(glfwGetGamepadState(GLFW_JOYSTICK_1 + bind.gamepad, &state)) {
         return state.axes[bind.key];
       }
       return 0.0f;
@@ -42,28 +49,35 @@ static float get_input_value(GLFWwindow* window, const ActionBinding& bind) {
 }
 
 void action_map_update(Window* window) {
-  for (auto& [action, state] : g_ActionMap.action_states) {
-    state.prev_state = state.current_state;
-  }
-
   for (auto& [action, binds] : g_ActionMap.bindings) {
     Action& state = g_ActionMap.action_states[action];
+    state.bitset = state.bitset << 1;
 
-    bool pressed = false;
     float value = 0.0f;
-    int value_sum_count = 0;
+    int count = 0;
 
     for (const auto& bind : binds) {
-      float value_reading = get_input_value((GLFWwindow*)window_get_native_handle(window), bind);
+      
+      float value_reading = get_input_value(
+        (GLFWwindow*)window_get_native_handle(window),
+        bind
+      );
+
       if (std::abs(value_reading) > bind.dead_zone) {
-        pressed = true;
-        value = value * value_sum_count + value_reading * bind.scale;
-        value /= ++value_sum_count;
+        value = value + value_reading * bind.scale;
+        count++;
       }
     }
 
-    state.current_state = pressed;
-    state.value = value;
+    if(count > 0) {
+      state.bitset |= 1;
+      value /= count;
+      state.value = value;
+    }
+    else {
+      state.value = 0.0f;
+    }
+
   }
 }
 
@@ -77,10 +91,11 @@ void action_bind_key(const std::string& name, int key, float scale) {
   g_ActionMap.bindings[name].push_back(bind);
 }
 
-void action_bind_mouse_button(const std::string& name, int button) {
+void action_bind_mouse_button(const std::string& name, int button, float scale) {
   ActionBinding bind = {
     .type = ActionType::MOUSE_BUTTON,
-    .key = button
+    .key = button,
+    .scale = scale
   };
 
   g_ActionMap.bindings[name].push_back(bind);
@@ -101,21 +116,24 @@ void action_bind_mouse_axis(const std::string& name, bool x_axis,
 }
 
 
-void action_bind_gamepad_button(const std::string& name, int button) {
+void action_bind_gamepad_button(const std::string& name, int button, int gamepad, float scale) {
   ActionBinding bind = {
     .type = ActionType::GAMEPAD_BUTTON,
-    .key = button
+    .key = button,
+    .gamepad = gamepad,
+    .scale = scale
   };
 
   g_ActionMap.bindings[name].push_back(bind);
 }
 
-void action_bind_gamepad_axis(const std::string& name, bool x_axis, 
+void action_bind_gamepad_axis(const std::string& name, int axis, int gamepad,
                               float dead_zone, float scale) {
 
   ActionBinding bind = {
     .type = ActionType::GAMEPAD_AXIS,
-    .key = x_axis ? 0 : 1,
+    .key = axis,
+    .gamepad = gamepad,
     .scale = scale,
     .dead_zone = dead_zone
   };
@@ -127,30 +145,27 @@ bool action_pressed(const std::string& name) {
   auto it = g_ActionMap.action_states.find(name);
   if(it != g_ActionMap.action_states.end()) {
     const Action& action = it->second;
-    return action.current_state;
+    return action.bitset & 1;
   }
 
   return false;
-
 }
 
 bool action_just_pressed(const std::string& name) {
   auto it = g_ActionMap.action_states.find(name);
-  if(it != g_ActionMap.action_states.end()) {
+  if (it != g_ActionMap.action_states.end()) {
     const Action& action = it->second;
-    return action.current_state && !action.prev_state;
+    return (action.bitset & 0b11) == 0b01;
   }
-
   return false;
 }
 
 bool action_just_released(const std::string& name) {
   auto it = g_ActionMap.action_states.find(name);
-  if(it != g_ActionMap.action_states.end()) {
+  if (it != g_ActionMap.action_states.end()) {
     const Action& action = it->second;
-    return !action.current_state && action.prev_state;
+    return (action.bitset & 0b11) == 0b10;
   }
-
   return false;
 }
 
