@@ -82,21 +82,19 @@ void action_map_update(Window* window) {
 }
 
 void action_bind_key(const std::string& name, int key, float scale) {
-  ActionBinding bind = {
-    .type = ActionType::KEYBOARD,
-    .key = key,
-    .scale = scale
-  };
+  ActionBinding bind;
+	bind.key = key;
+	bind.type = ActionType::KEYBOARD;
+	bind.scale = scale;
 
   g_ActionMap.bindings[name].push_back(bind);
 }
 
 void action_bind_mouse_button(const std::string& name, int button, float scale) {
-  ActionBinding bind = {
-    .type = ActionType::MOUSE_BUTTON,
-    .key = button,
-    .scale = scale
-  };
+  ActionBinding bind;
+	bind.type = ActionType::MOUSE_BUTTON;
+	bind.key = button;
+	bind.scale = scale;
 
   g_ActionMap.bindings[name].push_back(bind);
 }
@@ -104,39 +102,33 @@ void action_bind_mouse_button(const std::string& name, int button, float scale) 
 
 void action_bind_mouse_axis(const std::string& name, bool x_axis, 
                             float dead_zone, float scale) {
-
-  ActionBinding bind = {
-    .type = ActionType::MOUSE_AXIS,
-    .key = x_axis ? 0 : 1,
-    .scale = scale,
-    .dead_zone = dead_zone
-  };
+  ActionBinding bind;
+	bind.key = x_axis ? 0 : 1;
+	bind.type = ActionType::MOUSE_AXIS;
+	bind.scale = scale;
+	bind.dead_zone = dead_zone;
 
   g_ActionMap.bindings[name].push_back(bind);
 }
 
 
 void action_bind_gamepad_button(const std::string& name, int button, int gamepad, float scale) {
-  ActionBinding bind = {
-    .type = ActionType::GAMEPAD_BUTTON,
-    .key = button,
-    .gamepad = gamepad,
-    .scale = scale
-  };
+  ActionBinding bind;
+	bind.type = ActionType::GAMEPAD_BUTTON;
+	bind.key = button;
+	bind.gamepad = gamepad;
+	bind.scale = scale;
 
   g_ActionMap.bindings[name].push_back(bind);
 }
 
 void action_bind_gamepad_axis(const std::string& name, int axis, int gamepad,
                               float dead_zone, float scale) {
-
-  ActionBinding bind = {
-    .type = ActionType::GAMEPAD_AXIS,
-    .key = axis,
-    .gamepad = gamepad,
-    .scale = scale,
-    .dead_zone = dead_zone
-  };
+  ActionBinding bind;
+	bind.type = ActionType::GAMEPAD_AXIS;
+	bind.key = axis;
+	bind.scale = scale;
+	bind.dead_zone = dead_zone;
 
   g_ActionMap.bindings[name].push_back(bind);
 }

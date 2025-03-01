@@ -1,9 +1,10 @@
 #pragma once
 #include <cstdint>
+#include <utility>
 
 struct Window;
 
-enum EventType {
+enum EventType : uint16_t {
   EVENT_QUIT, 
   EVENT_RESIZE,
   EVENT_KEY,
@@ -13,7 +14,7 @@ enum EventType {
   EVENT_SCROLL,
 };
 
-enum WindowFlags {
+enum WindowFlags : uint8_t {
   WINDOWFLAG_NONE         = 0,
   WINDOWFLAG_MAXIMIZED    = 1 << 0,
   WINDOWFLAG_RESIZABLE    = 1 << 1,
@@ -25,7 +26,6 @@ enum WindowFlags {
 
 struct Event {
   EventType type;
-
   union {
     struct { int width, height; } resize_data;
     struct { int key, scancode, action, mods; } key_data;
@@ -46,3 +46,4 @@ bool window_get_event(Event& e);
 void window_set_title(Window* window, const char* title);
 
 void* window_get_native_handle(const Window* window); 
+std::pair<int,int> window_get_resolution(const Window* window);

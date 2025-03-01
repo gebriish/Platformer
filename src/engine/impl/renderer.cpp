@@ -57,12 +57,6 @@ static struct {
 	int texture_slots[RNL_IMAGE_BIND_LIMIT];
 	int bind_slot_max;
 	Texture2D white_texture;
-
-	//========================================================
-	struct {
-		int width;
-		int height;
-	} render_target;
 } g_RendererState;
 
 void Camera::updateProjection()
@@ -161,7 +155,7 @@ static void add_box_2d(const DrawCommand& box)
 	add_line_2d(l);
 }
 
-void renderer_init() {
+void renderer_init(const Window* window) {
 	if(g_RendererState.initialized) {
 		std::cout << "Renderer already initialized\n";
 		return;
@@ -202,7 +196,7 @@ void renderer_init() {
 	shader_upload_int_array(g_RendererState.sprite_shader, "uTextures", 
 												 texture_slots, g_RendererState.bind_slot_max);
 	shader_use_program({0});
-
+ 
 	{
 		Image2D* white = image_initialize(1,1,3);
 		size_t handle;
@@ -214,15 +208,11 @@ void renderer_init() {
 		g_RendererState.white_texture = renderer_load_texture(white, TEXTURESPEC_NONE);
 		image_free(white);
 	}
-
-	renderer_bind_texture_slot(g_RendererState.white_texture, 0);
 }
 
 void renderer_set_viewport(int x, int y) 
 {
 	glViewport(0, 0, x, y);
-	g_RendererState.render_target.width = x;
-	g_RendererState.render_target.height = y;
 }
 
 void renderer_cleanup() 
@@ -270,11 +260,12 @@ void renderer_draw_lines(const Camera& camera)
 
 void renderer_draw_sprites(const Camera& camera) 
 {
+
 	shader_use_program(g_RendererState.sprite_shader);
 	shader_upload_mat4(g_RendererState.sprite_shader, "uProj", camera.proj.elements);
 	shader_upload_mat4(g_RendererState.sprite_shader, "uView", camera.view.elements);
-	shader_upload_vec2(g_RendererState.sprite_shader, "uRenderSize", 
-										g_RendererState.render_target.width, g_RendererState.render_target.height);
+
+	renderer_bind_texture_slot(g_RendererState.white_texture, 0);
 
 	for(size_t i=0; i<g_RendererState.bind_slot_max; i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -414,4 +405,19 @@ Texture2D renderer_load_texture(const char* path, TextureSpec spec) {
 void renderer_delete_texture(Texture2D& texture) {
 	glDeleteTextures(1, &texture.id);
 	texture.id = 0;
+}
+
+void renderer_begin() 
+{
+	//TODO: implement a render target
+}
+
+void renderer_end()
+{
+	//TODO: implement a render target
+}
+
+void renderer_blit(const Window* window) 
+{
+	//TODO: implement a render target
 }

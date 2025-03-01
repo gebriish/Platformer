@@ -2,6 +2,7 @@
 #include "vmath.hpp"
 #include "color.hpp"
 #include "transform.hpp"
+#include "window.hpp"
 #include "image.hpp"
 
 struct Camera
@@ -24,13 +25,13 @@ struct Texture2D {
 	unsigned int id;
 };
 
-enum TextureSpec {
+enum TextureSpec : uint8_t {
 	TEXTURESPEC_NONE   = 0,
 	TEXTURESPEC_LINEAR = 1 << 0,
 	TEXTURESPEC_CLIP   = 1 << 1,
 };
 
-void renderer_init();
+void renderer_init(const Window* window);
 void renderer_cleanup();
 void renderer_set_viewport(int x, int y);
 
@@ -54,3 +55,7 @@ void renderer_clear_line_buffer();
 Texture2D renderer_load_texture(Image2D* image, TextureSpec spec);
 Texture2D renderer_load_texture(const char* path, TextureSpec spec);
 void renderer_delete_texture(Texture2D& texture);
+
+void renderer_begin();
+void renderer_end();
+void renderer_blit(const Window* window);

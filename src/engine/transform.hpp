@@ -32,7 +32,6 @@ public:
   vec3 right() const;
 
   void setParent(Transform* newParent);
-
 };
 
 

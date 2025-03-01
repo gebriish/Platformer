@@ -1,5 +1,4 @@
 #include "../image.hpp"
-#include <iostream>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
@@ -48,7 +47,7 @@ void image_free(Image2D* image) {
 	delete image;
 }
 
-bool image_get_pixel_handle(Image2D* image, int x, int y, size_t& handle) {
+bool image_get_pixel_handle(const Image2D* image, int x, int y, size_t& handle) {
 	if(!image) return false;
 
 	if (x >= image->width || y >= image->height) return false;
@@ -57,7 +56,7 @@ bool image_get_pixel_handle(Image2D* image, int x, int y, size_t& handle) {
 	return true;
 }
 
-bool image_get_specification(Image2D* image, ImageSpec spec, float& data) {
+bool image_get_specification(const Image2D* image, ImageSpec spec, float& data) {
 	if(!image) return false;
 
 	switch(spec) {
@@ -77,15 +76,14 @@ bool image_get_specification(Image2D* image, ImageSpec spec, float& data) {
 	return true;
 }
 
-bool image_write_pixel(Image2D* image, size_t handle, unsigned char value)
-{
+bool image_write_pixel(const Image2D* image, size_t handle, unsigned char value) {
 	if(!image || !image->data) return false;
 	image->data[handle] = value;
 	return true;
 }
 
 
-unsigned char* image_get_data(Image2D* image) {
+const unsigned char* image_get_data(const Image2D* image) {
 	if (!image) return nullptr;
 	return image->data;
 }

@@ -22,11 +22,11 @@ public:
 	void drawBatch();
 
 private:
-	unsigned int vao, quad_vbo, instance_vbo, ebo;
 	static constexpr size_t MAX_SPRITES = 1024;
-
 	std::array<Sprite, MAX_SPRITES> instance_data;
+	unsigned int vao, quad_vbo, instance_vbo, ebo;
 	size_t sprite_count = 0;
 
+private:
 	void _init();
 };

@@ -6,8 +6,8 @@
 #define EVENT_QUEUE_SIZE 128
 
 struct Window {
+	GLFWwindow* handle;
   bool running;
-  GLFWwindow* handle;
 };
 
 #define EVENT_QUEUE_SIZE 128
@@ -164,4 +164,13 @@ void window_set_title(Window* window, const char* title) {
 
 void* window_get_native_handle(const Window* window) {
   return (void*)window->handle;
+}
+
+std::pair<int,int> window_get_resolution(const Window* window) {
+	if (!window) 
+		return std::make_pair(0,0);
+
+	int width, height;
+	glfwGetWindowSize(window->handle, &width, &height);
+	return std::make_pair(width, height);
 }
